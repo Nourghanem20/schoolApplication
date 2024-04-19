@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
@@ -16,135 +15,132 @@ import '../../../presentation/components and constants/constants.dart';
 import '../../../presentation/components and constants/constants.dart';
 import 'package:http/http.dart' as http;
 
-class ChatCubit extends Cubit<ChatStates>
-{
-  ChatCubit(): super(ChatInitialState());
-  static ChatCubit get(context)=>BlocProvider.of(context);
+class ChatCubit extends Cubit<ChatStates> {
+  ChatCubit() : super(ChatInitialState());
 
-  bool showPicker=false;
-  showEmojiPicker()
-  {
-    showPicker=!showPicker;
+  static ChatCubit get(context) => BlocProvider.of(context);
+
+  bool showPicker = false;
+
+  showEmojiPicker() {
+    showPicker = !showPicker;
     emit(ChatShowEmojiPickerState());
   }
-  FocusNode focusNode=FocusNode();
 
-  bool toggleFocusNode()
-  {
-    focusNode.addListener(()
-    {
-      if(focusNode.hasFocus)
-      {
-        showPicker=false;
+  FocusNode focusNode = FocusNode();
+
+  bool toggleFocusNode() {
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        showPicker = false;
       }
     });
-    emit(ChattoggleFocusNodeState());
+    emit(ChatToggleFocusNodeState());
     return showPicker;
   }
 
-  var messageController=TextEditingController();
-  emojiSelectController(Emoji emoji)
-  {
-    messageController.text=messageController.text+emoji.emoji;
+  var messageController = TextEditingController();
+
+  emojiSelectController(Emoji emoji) {
+    messageController.text = messageController.text + emoji.emoji;
     emit(ChatEmojiSelectControllerState());
   }
 
-
-
-
   ChatContactsModel? chatContactsModel;
-  Future getChatContacts()async
-  {
-    if(chatContactsModel!=null)
-    {
-      chatContactsModel=null;
+
+  Future getChatContacts() async {
+    if (chatContactsModel != null) {
+      chatContactsModel = null;
     }
     emit(ChatContactsLoadingState());
-    var headers = {
-      'Authorization': 'Bearer $token'
-    };
-    var request = http.Request('GET', Uri.parse('https://new-school-management-system.onrender.com/mob/get_contacts'));
+    var headers = {'Authorization': 'Bearer $token'};
+    var request = http.Request(
+        'GET',
+        Uri.parse(
+            'https://new-school-management-system.onrender.com/mob/get_contacts'));
 
     request.headers.addAll(headers);
 
     var response = await request.send();
 
     if (response.statusCode == 200) {
-      chatContactsModel=ChatContactsModel.fromJson(jsonDecode(await response.stream.bytesToString()));
+      chatContactsModel = ChatContactsModel.fromJson(
+          jsonDecode(await response.stream.bytesToString()));
       print(chatContactsModel?.toJson().toString());
       emit(ChatContactsSuccessState(chatContactsModel!));
-    }
-    else {
-      String error=jsonDecode(await response.stream.bytesToString())['message'];
+    } else {
+      String error =
+          jsonDecode(await response.stream.bytesToString())['message'];
       print(error);
       emit(ChatContactsErrorState(error));
     }
-
   }
 
   MessagesHistoryModel? messagesHistoryModel;
-  Future getMessages({required int id})async
-  {
-    if(messagesHistoryModel!=null)
-    {
-      messagesHistoryModel=null;
+
+  Future getMessages({required int id}) async {
+    if (messagesHistoryModel != null) {
+      messagesHistoryModel = null;
     }
     emit(ChatMessagesLoadingState());
-    var headers = {
-      'Authorization': 'Bearer $token'
-    };
-    var request = http.Request('GET', Uri.parse('https://new-school-management-system.onrender.com/mob/get_messages/$id'));
+    var headers = {'Authorization': 'Bearer $token'};
+    var request = http.Request(
+        'GET',
+        Uri.parse(
+            'https://new-school-management-system.onrender.com/mob/get_messages/$id'));
 
     request.headers.addAll(headers);
 
     var response = await request.send();
 
     if (response.statusCode == 200) {
-      messagesHistoryModel=MessagesHistoryModel.fromJson(jsonDecode(await response.stream.bytesToString()));
+      messagesHistoryModel = MessagesHistoryModel.fromJson(
+          jsonDecode(await response.stream.bytesToString()));
       print(messagesHistoryModel?.toJson().toString());
       emit(ChatMessagesSuccessState(messagesHistoryModel!));
-    }
-    else {
-      String error=jsonDecode(await response.stream.bytesToString())['message'];
+    } else {
+      String error =
+          jsonDecode(await response.stream.bytesToString())['message'];
       print(error);
       emit(ChatMessagesErrorState(error));
     }
-
   }
 
-
   TeacherProfileModel? teacherProfileModel;
-  Future getTeacherProfile({required int id})async
-  {
-    if(teacherProfileModel!=null)
-    {
-      teacherProfileModel=null;
+
+  Future getTeacherProfile({required int id}) async {
+    if (teacherProfileModel != null) {
+      teacherProfileModel = null;
     }
     emit(SchoolTeacherProfileLoadingState());
-    var headers = {
-      'Authorization': 'Bearer $token'
-    };
-    var request = http.MultipartRequest('GET', Uri.parse('https://new-school-management-system.onrender.com/mob/teacher_profile/$id'));
+    var headers = {'Authorization': 'Bearer $token'};
+    var request = http.MultipartRequest(
+        'GET',
+        Uri.parse(
+            'https://new-school-management-system.onrender.com/mob/teacher_profile/$id'));
 
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 201) {
-      teacherProfileModel=TeacherProfileModel.fromJson(jsonDecode(await response.stream.bytesToString()));
+      teacherProfileModel = TeacherProfileModel.fromJson(
+          jsonDecode(await response.stream.bytesToString()));
       print(response.statusCode);
       print(id);
       print(teacherProfileModel?.toJson().toString());
       emit(SchoolTeacherProfileSuccessState(teacherProfileModel!));
-    }
-    else {
-      String error=jsonDecode(await response.stream.bytesToString())['message'];
+    } else {
+      String error =
+          jsonDecode(await response.stream.bytesToString())['message'];
       print(response.statusCode);
       print(error);
-      emit(SchoolTeacherProfileErrorState(error:error));
-    }}
+      emit(SchoolTeacherProfileErrorState(error: error));
+    }
+  }
 
   StudentProfileModel? studentProfileModel;
+
   Future getStudentProfile({required id, required int year}) async {
     emit(GetStudentProfileLoadingState());
     var headers = {'Authorization': 'Bearer $token'};
@@ -155,7 +151,7 @@ class ChatCubit extends Cubit<ChatStates>
 
     request.headers.addAll(headers);
     request.fields.addAll({
-      'id':id.toString(),
+      'id': id.toString(),
       'year': year.toString(),
     });
     var response = await request.send();
@@ -168,7 +164,7 @@ class ChatCubit extends Cubit<ChatStates>
       emit(GetStudentProfileSuccessState(studentProfileModel!));
     } else {
       String error =
-      jsonDecode(await response.stream.bytesToString())['message'];
+          jsonDecode(await response.stream.bytesToString())['message'];
       print(response.statusCode);
       print(error);
       emit(GetStudentProfileErrorState(error));
@@ -176,29 +172,32 @@ class ChatCubit extends Cubit<ChatStates>
   }
 
   ParentProfileModel? parentProfileModel;
-  Future getParentProfile({required int id})async
-  {
+
+  Future getParentProfile({required int id}) async {
     emit(GetParentProfileLoadingState());
-    var headers = {
-      'Authorization': 'Bearer $token'
-    };
-    var request = http.MultipartRequest('GET', Uri.parse('https://new-school-management-system.onrender.com/mob/parent_profile/$id'));
+    var headers = {'Authorization': 'Bearer $token'};
+    var request = http.MultipartRequest(
+        'GET',
+        Uri.parse(
+            'https://new-school-management-system.onrender.com/mob/parent_profile/$id'));
 
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 201) {
-      parentProfileModel=ParentProfileModel.fromJson(jsonDecode(await response.stream.bytesToString()));
+      parentProfileModel = ParentProfileModel.fromJson(
+          jsonDecode(await response.stream.bytesToString()));
       print(response.statusCode);
       print(id);
       print(parentProfileModel?.toJson().toString());
       emit(GetParentProfileSuccessState(parentProfileModel!));
-    }
-    else {
-      String error=jsonDecode(await response.stream.bytesToString())['message'];
+    } else {
+      String error =
+          jsonDecode(await response.stream.bytesToString())['message'];
       print(response.statusCode);
       print(error);
       emit(GetParentProfileErrorState(error));
-    }}
+    }
+  }
 }

@@ -8,10 +8,12 @@ class SchoolCalendarLoadingState extends SchoolCalendarStates {}
 
 class SchoolCalendarSuccessState extends SchoolCalendarStates {
   final SchoolCalendarModel? model;
+
   SchoolCalendarSuccessState(this.model);
 }
 
 class SchoolCalendarErrorState extends SchoolCalendarStates {
   final String error;
+
   SchoolCalendarErrorState(this.error);
 }

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_schoolapp/business%20logic/cubits/blocCalender/states.dart';
+
 //import 'package:mobile_schoolapp/data/models/schoolCalendarModel.dart';
 import 'package:mobile_schoolapp/data/models/schoolCalendar_model.dart';
 import 'package:mobile_schoolapp/presentation/components%20and%20constants/constants.dart';
@@ -18,9 +19,11 @@ class CalendarCubit extends Cubit<SchoolCalendarStates> {
 
   //highlight today
   DateTime selectedDate = DateTime.now();
+
   //get home data
   SchoolCalendarModel? model;
-  void getSchoolCalendarData({required int year,required int newyear}) async {
+
+  void getSchoolCalendarData({required int year, required int newyear}) async {
     emit(SchoolCalendarLoadingState());
     print(token);
     var request = http.MultipartRequest(
@@ -33,8 +36,8 @@ class CalendarCubit extends Cubit<SchoolCalendarStates> {
     if (response.statusCode == 201) {
       print(year);
       print(token);
-      model =
-          SchoolCalendarModel.fromJson(jsonDecode(await response.stream.bytesToString()));
+      model = SchoolCalendarModel.fromJson(
+          jsonDecode(await response.stream.bytesToString()));
       emit(SchoolCalendarSuccessState(model!));
       print(model!.toJson().toString());
       //print(model!.work![0].type);

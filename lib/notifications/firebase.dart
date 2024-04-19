@@ -1,8 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:mobile_schoolapp/main.dart';
-import 'package:mobile_schoolapp/presentation/animations/studentMotion.dart';
-import 'package:mobile_schoolapp/presentation/animations/teacherMotion.dart';
-import 'package:mobile_schoolapp/presentation/components%20and%20constants/constants.dart';
+
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print('title :  ${message.notification?.title}');
